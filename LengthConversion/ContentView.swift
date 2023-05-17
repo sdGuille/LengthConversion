@@ -73,7 +73,14 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Conversions")
-            
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        amountIsFocused = false
+                    }
+                }
+            }
         }
     }
 }
