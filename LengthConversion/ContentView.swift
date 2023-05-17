@@ -65,7 +65,7 @@ struct ContentView: View {
                 } header: {
                     Text("To")
                 }
-
+                
                 Section {
                     Text(convertedAmount, format: .number)
                 } header: {
