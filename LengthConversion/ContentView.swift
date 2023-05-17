@@ -10,23 +10,44 @@ import SwiftUI
 
 
 struct ContentView: View {
-    @State private var convertFrom = 0.0
-    @FocusState private var valueIsFocused: Bool
-    var unitsInput = ["km", "mi", "ft", "yd", "m"]
-    var unitsOutput = ["km", "mi", "ft", "yd", "m"]
-    @State private var selectedUnit = "km"
-    @State private var selectOuputUnit = "mi"
+    @State private var inputAmount = ""
+    @State private var fromConversionIndex = 0
+    @State private var toConversionIndex = 1
+    @FocusState private var amountIsFocused: Bool
+    
+    let units: [(unitName: String, conversion: Double)] = [
+        ("m", 1.0),
+        ("inch", 0.0254),
+        ("yard", 0.9144),
+        ("foot", 0.3048),
+        ("km", 1000),
+        ("mile", 1_609.344)
+    ]
+    
+    var inputValue: Double {
+        return Double(inputAmount) ?? 0
+    }
+    
+    var unitAmount: Double {
+        let unit = units[fromConversionIndex]
+        return inputValue * unit.conversion
+    }
+    
+    var convertedAmount: Double {
+        let unit = units[toConversionIndex]
+        return unitAmount / unit.conversion
+    }
     
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Value", value: $convertFrom, format: .number)
+                    TextField("Value", text: $inputAmount)
                         .keyboardType(.decimalPad)
-                        .focused($valueIsFocused)
-                    Picker("unit", selection: $selectedUnit) {
-                        ForEach(unitsInput, id: \.self) { unit in
-                            Text(unit)
+                        .focused($amountIsFocused)
+                    Picker("from", selection: $fromConversionIndex) {
+                        ForEach(0..<units.count, id: \.self) {
+                            Text(units[$0].unitName)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -35,20 +56,29 @@ struct ContentView: View {
                 }
                 
                 Section {
-                    Picker("unit", selection: $selectOuputUnit) {
-                        ForEach(unitsOutput, id: \.self) { unit in
-                            Text(unit)
+                    Picker("To", selection: $toConversionIndex) {
+                        ForEach(0..<units.count, id: \.self) {
+                            Text(units[$0].unitName)
                         }
                     }
                     .pickerStyle(.segmented)
                 } header: {
                     Text("To")
                 }
+
+                Section {
+                    Text(convertedAmount, format: .number)
+                } header: {
+                    Text("Result")
+                }
             }
-            .navigationTitle("Convertions")
+            .navigationTitle("Conversions")
+            
         }
     }
 }
+
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
